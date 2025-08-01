@@ -17,12 +17,12 @@ import {
 	ReloadOutlined,
 	InfoCircleOutlined,
 	FolderOutlined,
-	DownOutlined,
-	UpOutlined,
+	ClockCircleOutlined,
 } from '@ant-design/icons'
 import { useAppState } from './hooks/useAppState'
 import Dashboard from './components/Dashboard'
 import CategoryView from './components/CategoryView'
+import TimeBasedView from './components/TimeBasedView'
 import SettingsPage from './components/SettingsPage'
 import './App.css'
 
@@ -30,7 +30,6 @@ const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
 
 type ActiveTab = 'dashboard' | 'settings' | string // string for category IDs
-
 function App() {
 	const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
 	const [collapsed, setCollapsed] = useState(false)
@@ -106,7 +105,7 @@ function App() {
 			icon: <FolderOutlined />,
 			label: (
 				<Space>
-					分类
+					自定义分类
 					{categories.length > 0 && (
 						<Badge
 							count={categories.length}
@@ -117,6 +116,11 @@ function App() {
 				</Space>
 			),
 			children: categoryMenuItems,
+		},
+		{
+			key: 'time-based',
+			icon: <ClockCircleOutlined />,
+			label: '按收藏时间',
 		},
 		{
 			key: 'settings',
@@ -144,6 +148,16 @@ function App() {
 					repos={repos}
 					categories={categories}
 					onCategoryClick={handleCategoryClick}
+				/>
+			)
+		}
+
+		if (activeTab === 'time-based') {
+			return (
+				<TimeBasedView
+					repos={repos}
+					loading={loading}
+					onRefresh={handleRefresh}
 				/>
 			)
 		}
@@ -200,7 +214,6 @@ function App() {
 					collapsible
 					collapsed={collapsed}
 					onCollapse={setCollapsed}
-					
 					theme='light'
 					width={250}
 					style={{
@@ -293,12 +306,12 @@ function App() {
 								alignItems: 'center',
 							}}>
 							<Title level={3} style={{ margin: 0, marginRight: '12px' }}>
-								{activeTab === 'dashboard'
-									? '数据大盘'
-									: activeTab === 'settings'
-									? '设置'
-									: categories.find((cat) => cat.id === activeTab)?.name ||
-									  '分类详情'}
+								{
+								  activeTab === 'dashboard' ? '数据大盘' : 
+									activeTab === 'time-based' ? '按收藏时间分类' :
+									activeTab === 'settings' ? '设置' : 
+									categories.find((cat) => cat.id === activeTab)?.name ||'分类详情'
+								}
 							</Title>
 							{userConfig.username && (
 								<Text type='secondary'>@{userConfig.username}</Text>
@@ -306,8 +319,7 @@ function App() {
 						</div>
 
 						<Space>
-							{(activeTab === 'dashboard' ||
-								categories.some((cat) => cat.id === activeTab)) && (
+            {(activeTab === 'dashboard' || activeTab === 'time-based' || categories.some(cat => cat.id === activeTab)) && (
 								<>
 									<Tooltip title='重新分类'>
 										<Button
