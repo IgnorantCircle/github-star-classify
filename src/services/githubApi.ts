@@ -5,7 +5,7 @@
  */
 
 import { Octokit } from '@octokit/rest'
-import  type { GitHubRepo, StarredReposResponse } from '../types'
+import type { GitHubRepo, StarredReposResponse } from '../types'
 class GitHubApiService {
 	private octokit: Octokit
 
@@ -70,7 +70,7 @@ class GitHubApiService {
 				nextPage: response.data.length === perPage ? page + 1 : undefined,
 			}
 		} catch (error: any) {
-			console.error('获取starred仓库失败:', error)
+			console.log('获取starred仓库失败:', error)
 			throw new Error(`获取starred仓库失败: ${error.message}`)
 		}
 	}
@@ -102,11 +102,10 @@ class GitHubApiService {
 			const response = await this.octokit.rest.rateLimit.get()
 			return response.data.rate
 		} catch (error) {
-			console.error('获取API限制信息失败:', error)
+			console.log('获取API限制信息失败:', error)
 			return null
 		}
 	}
 }
 
-
-export default GitHubApiService;
+export default GitHubApiService

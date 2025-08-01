@@ -26,14 +26,16 @@ class StorageService {
 				JSON.stringify(config)
 			)
 		} catch (error) {
-			console.error('保存用户配置失败:', error)
+			console.log('保存用户配置失败:', error)
 		}
 	}
 
 	// 获取用户配置
 	getUserConfig(): UserConfig {
 		try {
-			const stored = localStorage.getItem(Storage.STORAGE_KEYS.USER_CONFIG)
+			const stored = localStorage.getItem(
+				StorageService.STORAGE_KEYS.USER_CONFIG
+			)
 			if (stored) {
 				const config = JSON.parse(stored)
 				return {
@@ -44,7 +46,7 @@ class StorageService {
 				}
 			}
 		} catch (error) {
-			console.error('获取用户配置失败:', error)
+			console.log('获取用户配置失败:', error)
 		}
 
 		// 返回默认配置
@@ -68,7 +70,7 @@ class StorageService {
 				new Date().toISOString()
 			)
 		} catch (error) {
-			console.error('保存仓库数据失败:', error)
+			console.log('保存仓库数据失败:', error)
 		}
 	}
 
@@ -78,7 +80,7 @@ class StorageService {
 			const stored = localStorage.getItem(StorageService.STORAGE_KEYS.REPOS)
 			return stored ? JSON.parse(stored) : []
 		} catch (error) {
-			console.error('获取仓库数据失败:', error)
+			console.log('获取仓库数据失败:', error)
 			return []
 		}
 	}
@@ -91,7 +93,7 @@ class StorageService {
 				JSON.stringify(tags)
 			)
 		} catch (error) {
-			console.error('保存标签失败:', error)
+			console.log('保存标签失败:', error)
 		}
 	}
 
@@ -101,7 +103,7 @@ class StorageService {
 			const stored = localStorage.getItem(StorageService.STORAGE_KEYS.TAGS)
 			return stored ? JSON.parse(stored) : this.ClassifyService.getDefaultTags()
 		} catch (error) {
-			console.error('获取标签失败:', error)
+			console.log('获取标签失败:', error)
 			return this.ClassifyService.getDefaultTags()
 		}
 	}
@@ -114,7 +116,7 @@ class StorageService {
 				JSON.stringify(categories)
 			)
 		} catch (error) {
-			console.error('保存分类失败:', error)
+			console.log('保存分类失败:', error)
 		}
 	}
 
@@ -126,7 +128,7 @@ class StorageService {
 			)
 			return stored ? JSON.parse(stored) : []
 		} catch (error) {
-			console.error('获取分类失败:', error)
+			console.log('获取分类失败:', error)
 			return []
 		}
 	}
@@ -139,7 +141,7 @@ class StorageService {
 				JSON.stringify(rules)
 			)
 		} catch (error) {
-			console.error('保存关键词规则失败:', error)
+			console.log('保存关键词规则失败:', error)
 		}
 	}
 
@@ -153,7 +155,7 @@ class StorageService {
 				? JSON.parse(stored)
 				: this.ClassifyService.getDefaultKeywordRules()
 		} catch (error) {
-			console.error('获取关键词规则失败:', error)
+			console.log('获取关键词规则失败:', error)
 			return this.ClassifyService.getDefaultKeywordRules()
 		}
 	}
@@ -164,7 +166,7 @@ class StorageService {
 			const stored = localStorage.getItem(StorageService.STORAGE_KEYS.LAST_SYNC)
 			return stored ? new Date(stored) : null
 		} catch (error) {
-			console.error('获取最后同步时间失败:', error)
+			console.log('获取最后同步时间失败:', error)
 			return null
 		}
 	}
@@ -176,7 +178,7 @@ class StorageService {
 				localStorage.removeItem(key)
 			})
 		} catch (error) {
-			console.error('清除数据失败:', error)
+			console.log('清除数据失败:', error)
 		}
 	}
 
@@ -207,7 +209,7 @@ class StorageService {
 
 			return true
 		} catch (error) {
-			console.error('导入数据失败:', error)
+			console.log('导入数据失败:', error)
 			return false
 		}
 	}
@@ -229,11 +231,10 @@ class StorageService {
 
 			return { used, total, percentage }
 		} catch (error) {
-			console.error('获取存储使用情况失败:', error)
+			console.log('获取存储使用情况失败:', error)
 			return { used: 0, total: 0, percentage: 0 }
 		}
 	}
 }
 
-
-export default StorageService;
+export default StorageService
