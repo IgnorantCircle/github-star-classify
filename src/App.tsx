@@ -25,6 +25,7 @@ import {
 	InfoCircleOutlined,
 	FolderOutlined,
 	ClockCircleOutlined,
+	StarOutlined,
 } from '@ant-design/icons'
 import { useAppState } from './hooks/useAppState'
 import Dashboard from './components/Dashboard'
@@ -32,6 +33,7 @@ import CategoryView from './components/CategoryView'
 import TimeBasedView from './components/TimeBasedView'
 import SettingsPage from './components/SettingsPage'
 import './App.css'
+import PopularityView from './components/PopularityView'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
@@ -62,7 +64,7 @@ function AppContent() {
 		storageService,
 	} = useAppState()
 
-	const [collapsed, setCollapsed] = useState(false);
+	const [collapsed, setCollapsed] = useState(false)
 	const storageUsage = storageService.getStorageUsage()
 	const lastSyncTime = storageService.getLastSyncTime()
 
@@ -128,6 +130,11 @@ function AppContent() {
 			key: 'time-based',
 			icon: <ClockCircleOutlined />,
 			label: '按收藏时间',
+		},
+		{
+			key: 'popularity',
+			icon: <StarOutlined />,
+			label: '按受欢迎程度',
 		},
 		{
 			key: 'settings',
@@ -346,48 +353,72 @@ function AppContent() {
 							</div>
 						)}
 
-					          <Routes>
-            <Route path="/" element={
-              <Dashboard
-                repos={repos}
-                categories={categories}
-                onCategoryClick={handleCategoryClick}
-              />
-            } />
-            <Route path="/time-based" element={
-              <TimeBasedView
-                repos={repos}
-                loading={loading}
-                onRefresh={handleRefresh}
-              />
-            } />
-            <Route path="/settings" element={
-              <SettingsPage
-                userConfig={userConfig}
-                tags={tags}
-                onUpdateConfig={updateUserConfig}
-                onAddTag={addTag}
-                onUpdateTag={updateTag}
-                onDeleteTag={deleteTag}
-                onAddKeywordRule={addKeywordRule}
-                onUpdateKeywordRule={updateKeywordRule}
-                onDeleteKeywordRule={deleteKeywordRule}
-                onClearAllData={clearAllData}
-                onExportData={exportData}
-                onImportData={importData}
-                onRefreshData={handleRefresh}
-                storageUsage={storageUsage}
-              />
-            } />
-            <Route path="/category/:categoryId" element={
-              <CategoryView
-                categories={categories.filter(cat => cat.id === activeTab)}
-                loading={loading}
-                onRefresh={handleRefresh}
-                singleCategory={true}
-              />
-            } />
-          </Routes>
+						<Routes>
+							<Route
+								path='/'
+								element={
+									<Dashboard
+										repos={repos}
+										categories={categories}
+										onCategoryClick={handleCategoryClick}
+									/>
+								}
+							/>
+							<Route
+								path='/time-based'
+								element={
+									<TimeBasedView
+										repos={repos}
+										loading={loading}
+										onRefresh={handleRefresh}
+									/>
+								}
+							/>
+							<Route
+								path='/popularity'
+								element={
+									<PopularityView
+										repos={repos}
+										loading={loading}
+										onRefresh={handleRefresh}
+									/>
+								}
+							/>
+							<Route
+								path='/settings'
+								element={
+									<SettingsPage
+										userConfig={userConfig}
+										tags={tags}
+										onUpdateConfig={updateUserConfig}
+										onAddTag={addTag}
+										onUpdateTag={updateTag}
+										onDeleteTag={deleteTag}
+										onAddKeywordRule={addKeywordRule}
+										onUpdateKeywordRule={updateKeywordRule}
+										onDeleteKeywordRule={deleteKeywordRule}
+										onClearAllData={clearAllData}
+										onExportData={exportData}
+										onImportData={importData}
+										onRefreshData={handleRefresh}
+										storageUsage={storageUsage}
+									/>
+								}
+							/>
+							<Route
+								path='/category/:categoryId'
+								element={
+									<CategoryView
+										categories={categories.filter(
+											(cat) => cat.id === activeTab
+										)}
+										loading={loading}
+										onRefresh={handleRefresh}
+										singleCategory={true}
+									/>
+								}
+							/>
+						</Routes>
 					</Content>
 				</Layout>
 			</Layout>
@@ -395,12 +426,11 @@ function AppContent() {
 	)
 }
 
-
 function App() {
-  return (
-    <Router>
-      <AppContent />
-    </Router>
-  );
+	return (
+		<Router>
+			<AppContent />
+		</Router>
+	)
 }
 export default App
