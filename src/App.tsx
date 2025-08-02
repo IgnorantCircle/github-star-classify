@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	useNavigate,
+	useLocation,
+} from 'react-router-dom'
+import {
 	Layout,
 	Menu,
 	Typography,
@@ -29,10 +36,9 @@ import './App.css'
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
 
-type ActiveTab = 'dashboard' | 'settings' | string // string for category IDs
-function App() {
-	const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
-	const [collapsed, setCollapsed] = useState(false)
+function AppContent() {
+	const navigate = useNavigate()
+	const location = useLocation()
 	const [messageApi, contextHolder] = message.useMessage()
 	const {
 		repos,
@@ -56,11 +62,12 @@ function App() {
 		storageService,
 	} = useAppState()
 
+	const [collapsed, setCollapsed] = useState(false);
 	const storageUsage = storageService.getStorageUsage()
 	const lastSyncTime = storageService.getLastSyncTime()
 
 	const categoryMenuItems = categories.map((category) => ({
-		key: category.id,
+		key: `category/${category.id}`,
 		icon: <AppstoreOutlined />,
 		label: (
 			<Space>
@@ -134,69 +141,38 @@ function App() {
 	}
 
 	const handleCategoryClick = (categoryId: string) => {
-		setActiveTab(categoryId)
+		navigate(`/category/${categoryId}`)
 	}
 
 	const handleMenuClick = ({ key }: { key: string }) => {
-		setActiveTab(key as ActiveTab)
+		navigate(`/${key === 'dashboard' ? '' : key}`)
 	}
 
-	const renderContent = () => {
-		if (activeTab === 'dashboard') {
-			return (
-				<Dashboard
-					repos={repos}
-					categories={categories}
-					onCategoryClick={handleCategoryClick}
-				/>
-			)
-		}
+	const getActiveTab = () => {
+		const path = location.pathname
+		if (path === '/') return 'dashboard'
+		if (path.startsWith('/category/')) return path.split('/')[2]
+		return path.substring(1)
+	}
+	const activeTab = getActiveTab()
+	const getPageTitle = () => {
+		const titleMap = [
+			{
+				key: 'dashboard',
+				value: '数据大盘',
+			},
+			{ key: 'time-based', value: '按收藏时间分类' },
+			{ key: 'popularity', value: '按受欢迎程度分类' },
+			{ key: 'activity', value: '按项目活跃度分类' },
+			{ key: 'maturity', value: '按项目成熟度分类' },
+			{ key: 'settings', value: '设置' },
+		]
 
-		if (activeTab === 'time-based') {
-			return (
-				<TimeBasedView
-					repos={repos}
-					loading={loading}
-					onRefresh={handleRefresh}
-				/>
-			)
-		}
-
-		if (activeTab === 'settings') {
-			return (
-				<SettingsPage
-					userConfig={userConfig}
-					tags={tags}
-					onUpdateConfig={updateUserConfig}
-					onAddTag={addTag}
-					onUpdateTag={updateTag}
-					onDeleteTag={deleteTag}
-					onAddKeywordRule={addKeywordRule}
-					onUpdateKeywordRule={updateKeywordRule}
-					onDeleteKeywordRule={deleteKeywordRule}
-					onClearAllData={clearAllData}
-					onExportData={exportData}
-					onImportData={importData}
-					onRefreshData={handleRefresh}
-					storageUsage={storageUsage}
-				/>
-			)
-		}
-
-		// 显示特定分类
+		titleMap.find((item) => {
+			if (item.key === activeTab) return item.value
+		})
 		const selectedCategory = categories.find((cat) => cat.id === activeTab)
-		if (selectedCategory) {
-			return (
-				<CategoryView
-					categories={[selectedCategory]}
-					loading={loading}
-					onRefresh={handleRefresh}
-					singleCategory={true}
-				/>
-			)
-		}
-
-		return null
+		return selectedCategory?.name || '分类详情'
 	}
 
 	useEffect(() => {
@@ -306,12 +282,7 @@ function App() {
 								alignItems: 'center',
 							}}>
 							<Title level={3} style={{ margin: 0, marginRight: '12px' }}>
-								{
-								  activeTab === 'dashboard' ? '数据大盘' : 
-									activeTab === 'time-based' ? '按收藏时间分类' :
-									activeTab === 'settings' ? '设置' : 
-									categories.find((cat) => cat.id === activeTab)?.name ||'分类详情'
-								}
+								{getPageTitle()}
 							</Title>
 							{userConfig.username && (
 								<Text type='secondary'>@{userConfig.username}</Text>
@@ -319,7 +290,9 @@ function App() {
 						</div>
 
 						<Space>
-            {(activeTab === 'dashboard' || activeTab === 'time-based' || categories.some(cat => cat.id === activeTab)) && (
+							{(activeTab === 'dashboard' ||
+								activeTab === 'time-based' ||
+								categories.some((cat) => cat.id === activeTab)) && (
 								<>
 									<Tooltip title='重新分类'>
 										<Button
@@ -373,7 +346,48 @@ function App() {
 							</div>
 						)}
 
-						{renderContent()}
+					          <Routes>
+            <Route path="/" element={
+              <Dashboard
+                repos={repos}
+                categories={categories}
+                onCategoryClick={handleCategoryClick}
+              />
+            } />
+            <Route path="/time-based" element={
+              <TimeBasedView
+                repos={repos}
+                loading={loading}
+                onRefresh={handleRefresh}
+              />
+            } />
+            <Route path="/settings" element={
+              <SettingsPage
+                userConfig={userConfig}
+                tags={tags}
+                onUpdateConfig={updateUserConfig}
+                onAddTag={addTag}
+                onUpdateTag={updateTag}
+                onDeleteTag={deleteTag}
+                onAddKeywordRule={addKeywordRule}
+                onUpdateKeywordRule={updateKeywordRule}
+                onDeleteKeywordRule={deleteKeywordRule}
+                onClearAllData={clearAllData}
+                onExportData={exportData}
+                onImportData={importData}
+                onRefreshData={handleRefresh}
+                storageUsage={storageUsage}
+              />
+            } />
+            <Route path="/category/:categoryId" element={
+              <CategoryView
+                categories={categories.filter(cat => cat.id === activeTab)}
+                loading={loading}
+                onRefresh={handleRefresh}
+                singleCategory={true}
+              />
+            } />
+          </Routes>
 					</Content>
 				</Layout>
 			</Layout>
@@ -381,4 +395,12 @@ function App() {
 	)
 }
 
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
 export default App
