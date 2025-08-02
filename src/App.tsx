@@ -26,6 +26,7 @@ import {
 	FolderOutlined,
 	ClockCircleOutlined,
 	StarOutlined,
+	TrophyOutlined,
 } from '@ant-design/icons'
 import { useAppState } from './hooks/useAppState'
 import Dashboard from './components/Dashboard'
@@ -34,6 +35,7 @@ import TimeBasedView from './components/TimeBasedView'
 import SettingsPage from './components/SettingsPage'
 import './App.css'
 import PopularityView from './components/PopularityView'
+import MaturityView from './components/MaturityView'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
@@ -135,6 +137,11 @@ function AppContent() {
 			key: 'popularity',
 			icon: <StarOutlined />,
 			label: '按受欢迎程度',
+		},
+		{
+			key: 'maturity',
+			icon: <TrophyOutlined />,
+			label: '按项目成熟度',
 		},
 		{
 			key: 'settings',
@@ -365,6 +372,19 @@ function AppContent() {
 								}
 							/>
 							<Route
+								path='/category/:categoryId'
+								element={
+									<CategoryView
+										categories={categories.filter(
+											(cat) => cat.id === activeTab
+										)}
+										loading={loading}
+										onRefresh={handleRefresh}
+										singleCategory={true}
+									/>
+								}
+							/>
+							<Route
 								path='/time-based'
 								element={
 									<TimeBasedView
@@ -378,6 +398,16 @@ function AppContent() {
 								path='/popularity'
 								element={
 									<PopularityView
+										repos={repos}
+										loading={loading}
+										onRefresh={handleRefresh}
+									/>
+								}
+							/>
+							<Route
+								path='/maturity'
+								element={
+									<MaturityView
 										repos={repos}
 										loading={loading}
 										onRefresh={handleRefresh}
@@ -402,19 +432,6 @@ function AppContent() {
 										onImportData={importData}
 										onRefreshData={handleRefresh}
 										storageUsage={storageUsage}
-									/>
-								}
-							/>
-							<Route
-								path='/category/:categoryId'
-								element={
-									<CategoryView
-										categories={categories.filter(
-											(cat) => cat.id === activeTab
-										)}
-										loading={loading}
-										onRefresh={handleRefresh}
-										singleCategory={true}
 									/>
 								}
 							/>
