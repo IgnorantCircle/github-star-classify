@@ -27,6 +27,7 @@ import {
 	ClockCircleOutlined,
 	StarOutlined,
 	TrophyOutlined,
+	ThunderboltOutlined,
 } from '@ant-design/icons'
 import { useAppState } from './hooks/useAppState'
 import Dashboard from './components/Dashboard'
@@ -36,6 +37,7 @@ import SettingsPage from './components/SettingsPage'
 import './App.css'
 import PopularityView from './components/PopularityView'
 import MaturityView from './components/MaturityView'
+import ActivityView from './components/ActivityView'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
@@ -142,6 +144,11 @@ function AppContent() {
 			key: 'maturity',
 			icon: <TrophyOutlined />,
 			label: '按项目成熟度',
+		},
+		{
+			key: 'activity',
+			icon: <ThunderboltOutlined />,
+			label: '按项目活跃度',
 		},
 		{
 			key: 'settings',
@@ -408,6 +415,16 @@ function AppContent() {
 								path='/maturity'
 								element={
 									<MaturityView
+										repos={repos}
+										loading={loading}
+										onRefresh={handleRefresh}
+									/>
+								}
+							/>
+							<Route
+								path='/activity'
+								element={
+									<ActivityView
 										repos={repos}
 										loading={loading}
 										onRefresh={handleRefresh}
