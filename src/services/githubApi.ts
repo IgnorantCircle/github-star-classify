@@ -44,25 +44,33 @@ class GitHubApiService {
 				per_page: perPage,
 				sort: 'created',
 				direction: 'desc',
+				//非常关键，没有这个获取不了收藏时间
+				headers: {
+					accept: 'application/vnd.github.v3.star+json',
+				},
 			})
 
-			const repos: GitHubRepo[] = response.data.map((repo: any) => ({
-				id: repo.id,
-				name: repo.name,
-				full_name: repo.full_name,
-				description: repo.description,
-				html_url: repo.html_url,
-				stargazers_count: repo.stargazers_count,
-				language: repo.language,
-				topics: repo.topics || [],
-				created_at: repo.created_at,
-				updated_at: repo.updated_at,
-				pushed_at: repo.pushed_at,
-				owner: {
-					login: repo.owner.login,
-					avatar_url: repo.owner.avatar_url,
-				},
-			}))
+			const repos: GitHubRepo[] = response.data.map((item: any) => {
+				const repo = item.repo || item // 兼容不同的API响应格式
+				return {
+					id: repo.id,
+					name: repo.name,
+					full_name: repo.full_name,
+					description: repo.description,
+					html_url: repo.html_url,
+					stargazers_count: repo.stargazers_count,
+					language: repo.language,
+					topics: repo.topics || [],
+					created_at: repo.created_at,
+					updated_at: repo.updated_at,
+					pushed_at: repo.pushed_at,
+					starred_at: item.starred_at || repo.created_at, // 使用收藏时间，如果没有则回退到创建时间
+					owner: {
+						login: repo.owner.login,
+						avatar_url: repo.owner.avatar_url,
+					},
+				}
+			})
 
 			return {
 				data: repos,

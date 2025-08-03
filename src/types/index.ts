@@ -11,6 +11,7 @@ export interface GitHubRepo {
   created_at: string;
   updated_at: string;
   pushed_at: string;
+  starred_at: string; 
   owner: {
     login: string;
     avatar_url: string;

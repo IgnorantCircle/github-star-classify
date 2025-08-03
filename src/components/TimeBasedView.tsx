@@ -32,7 +32,7 @@ interface TimeBasedViewProps {
 	onRefresh?: () => void
 }
 
-type SortType = 'name' | 'stars' | 'updated' | 'created'
+type SortType = 'name' | 'stars' | 'updated' | 'created' | 'starred'
 type SortOrder = 'asc' | 'desc'
 
 const PAGE_SIZE = 8
@@ -43,7 +43,7 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 	onRefresh,
 }) => {
 	const [searchTerm, setSearchTerm] = useState('')
-	const [sortType, setSortType] = useState<SortType>('created')
+	const [sortType, setSortType] = useState<SortType>('starred')
 	const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
 	const [activeTab, setActiveTab] = useState<string>('thisWeek')
 	const [periodPages, setPeriodPages] = useState<Map<string, number>>(new Map())
@@ -90,9 +90,9 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 		})
 
 		repos.forEach((repo) => {
-			const createdAt = new Date(repo.created_at)
+			const starredAt = new Date(repo.starred_at)
 			const daysDiff = Math.floor(
-				(now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+				(now.getTime() - starredAt.getTime()) / (1000 * 60 * 60 * 24)
 			)
 
 			let categorized = false
@@ -154,6 +154,10 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 				case 'created':
 					aValue = new Date(a.created_at).getTime()
 					bValue = new Date(b.created_at).getTime()
+					break
+				case 'starred':
+					aValue = new Date(a.starred_at).getTime()
+					bValue = new Date(b.starred_at).getTime()
 					break
 				default:
 					return 0
@@ -224,6 +228,7 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 							value={sortType}
 							onChange={setSortType}
 							style={{ width: '100%' }}>
+							<Option value='starred'>收藏时间</Option>
 							<Option value='created'>创建时间</Option>
 							<Option value='updated'>更新时间</Option>
 							<Option value='stars'>星标数</Option>
@@ -288,7 +293,7 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 								<ConfigProvider
 									theme={{
 										token: {
-											bodyPadding:"16px 0 36px 0"
+											bodyPadding: '16px 0 36px 0',
 										},
 									}}>
 									<Card
