@@ -19,7 +19,6 @@ import {
 	SearchOutlined,
 	SortAscendingOutlined,
 	SortDescendingOutlined,
-	StarOutlined,
 } from '@ant-design/icons'
 import type { GitHubRepo } from '../types'
 import RepoCard from './RepoCard'
@@ -182,8 +181,8 @@ const PopularityView: React.FC<PopularityViewProps> = ({
 					bValue = b.stargazers_count
 					break
 				case 'updated':
-					aValue = new Date(a.updated_at).getTime()
-					bValue = new Date(b.updated_at).getTime()
+					aValue = new Date(a.pushed_at || a.updated_at).getTime()
+					bValue = new Date(b.pushed_at || b.updated_at).getTime()
 					break
 				case 'created':
 					aValue = new Date(a.created_at).getTime()
@@ -337,12 +336,11 @@ const PopularityView: React.FC<PopularityViewProps> = ({
 										}}>
 										<div style={{ marginBottom: 16, textAlign: 'center' }}>
 											<div style={{ fontSize: '16px' }}>
-												{level.min === 0 ? '0' : level.min.toLocaleString()}-
+												{level.min === 0 ? '0' : level.min}-
 												{level.max === Infinity
 													? '∞'
-													: level.max.toLocaleString()}{' '}
-													<StarOutlined style={{ color: '#faad14', fontSize: 16,margin:"0 6px"}} />
-												范围内的项目
+													: level.max}
+												星范围内的项目
 											</div>
 										</div>
 										<Row gutter={[16, 16]}>

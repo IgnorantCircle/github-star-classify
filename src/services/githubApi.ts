@@ -52,22 +52,36 @@ class GitHubApiService {
 
 			const repos: GitHubRepo[] = response.data.map((item: any) => {
 				const repo = item.repo || item // 兼容不同的API响应格式
+				const {
+					html_url,
+					stargazers_count,
+					language,
+					topics = [],
+					created_at,
+					updated_at,
+					pushed_at,
+					owner,
+					id,
+					name,
+					full_name,
+					description,
+				} = repo
 				return {
-					id: repo.id,
-					name: repo.name,
-					full_name: repo.full_name,
-					description: repo.description,
-					html_url: repo.html_url,
-					stargazers_count: repo.stargazers_count,
-					language: repo.language,
-					topics: repo.topics || [],
-					created_at: repo.created_at,
-					updated_at: repo.updated_at,
-					pushed_at: repo.pushed_at,
+					id,
+					name,
+					full_name,
+					description,
+					html_url,
+					stargazers_count,
+					language,
+					topics,
+					created_at,
+					updated_at,
+					pushed_at,
 					starred_at: item.starred_at || repo.created_at, // 使用收藏时间，如果没有则回退到创建时间
 					owner: {
-						login: repo.owner.login,
-						avatar_url: repo.owner.avatar_url,
+						login: owner.login,
+						avatar_url: owner.avatar_url,
 					},
 				}
 			})

@@ -9,7 +9,9 @@ export interface GitHubRepo {
   language: string | null;
   topics: string[];
   created_at: string;
+//用 updated_at 判断仓库是否被维护（即使没有代码推送，只要有 issue 也算活跃）这一块的逻辑可以自己改。
   updated_at: string;
+//用 pushed_at 判断代码是否活跃（如 “近半年是否有代码推送”）；
   pushed_at: string;
   starred_at: string; 
   owner: {

@@ -117,9 +117,11 @@ const CategoryView: React.FC<CategoryViewProps> = ({
 				case 'stars':
 					comparison = a.stargazers_count - b.stargazers_count
 					break
+
 				case 'updated':
 					comparison =
-						new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+						new Date(a.pushed_at || a.updated_at).getTime() -
+						new Date(b.pushed_at || b.updated_at).getTime()
 					break
 				case 'created':
 					comparison =

@@ -24,7 +24,7 @@ const Dashboard: React.FC<DashboardProps> = ({ repos, categories, onCategoryClic
     repo.stargazers_count > (max?.stargazers_count || 0) ? repo : max, null as GitHubRepo | null
   );
   const recentRepos = repos
-    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .sort((a, b) => new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime())
     .slice(0, 5);
 
   // 语言统计
@@ -238,7 +238,7 @@ const Dashboard: React.FC<DashboardProps> = ({ repos, categories, onCategoryClic
                       </Text>
                       <br />
                       <Text type="secondary" style={{ fontSize: 12 }}>
-                        {new Date(repo.updated_at).toLocaleDateString()}
+                        {new Date(repo.pushed_at).toLocaleDateString()}
                       </Text>
                     </div>
                   ))}

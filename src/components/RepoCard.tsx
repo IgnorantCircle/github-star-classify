@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Tag, Typography, Space, Button, Tooltip } from 'antd'
-import { StarOutlined, EyeOutlined, CalendarOutlined } from '@ant-design/icons'
+import { StarOutlined, EyeOutlined } from '@ant-design/icons'
 import type { GitHubRepo } from '../types'
 
 const { Text, Paragraph } = Typography
@@ -9,13 +9,38 @@ interface RepoCardProps {
 	repo: GitHubRepo
 	tags?: string[]
 	onTagClick?: (tag: string) => void
+	//默认是default（最近更新时间）
+	viewType?: 'starred' | 'created' | 'default'
 }
 
-const RepoCard: React.FC<RepoCardProps> = ({ repo, tags = [], onTagClick }) => {
+const RepoCard: React.FC<RepoCardProps> = ({
+	repo,
+	tags = [],
+	onTagClick,
+	viewType = 'default',
+}) => {
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString('zh-CN')
 	}
-
+	const getTimeInfo = () => {
+		switch (viewType) {
+			case 'starred':
+				return {
+					date: repo.starred_at,
+					label: '收藏时间',
+				}
+			case 'created':
+				return {
+					date: repo.created_at,
+					label: '创建时间',
+				}
+			default:
+				return {
+					date: repo.pushed_at,
+					label: '更新时间',
+				}
+		}
+	}
 	const formatNumber = (num: number) => {
 		if (num >= 1000) {
 			return `${(num / 1000).toFixed(1)}k`
@@ -184,9 +209,11 @@ const RepoCard: React.FC<RepoCardProps> = ({ repo, tags = [], onTagClick }) => {
 						</Text>
 					</Space>
 					<Space size={4}>
-						<CalendarOutlined style={{ fontSize: 12, color: '#666' }} />
 						<Text style={{ fontSize: 12, color: '#666' }}>
-							{formatDate(repo.updated_at)}
+							{getTimeInfo().label}:
+						</Text>
+						<Text style={{ fontSize: 12, color: '#666' }}>
+							{formatDate(getTimeInfo().date)}
 						</Text>
 					</Space>
 				</Space>

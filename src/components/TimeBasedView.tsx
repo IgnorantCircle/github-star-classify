@@ -148,8 +148,8 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 					bValue = b.stargazers_count
 					break
 				case 'updated':
-					aValue = new Date(a.updated_at).getTime()
-					bValue = new Date(b.updated_at).getTime()
+					aValue = new Date(a.pushed_at || a.updated_at).getTime()
+					bValue = new Date(b.pushed_at || b.updated_at).getTime()
 					break
 				case 'created':
 					aValue = new Date(a.created_at).getTime()
@@ -306,7 +306,11 @@ const TimeBasedView: React.FC<TimeBasedViewProps> = ({
 										<Row gutter={[16, 16]}>
 											{paginatedRepos.map((repo) => (
 												<Col key={repo.id} xs={24} sm={12} lg={8} xl={6}>
-													<RepoCard repo={repo} tags={[period.name]} />
+													<RepoCard
+														repo={repo}
+														tags={[period.name]}
+														viewType='starred'
+													/>
 												</Col>
 											))}
 										</Row>

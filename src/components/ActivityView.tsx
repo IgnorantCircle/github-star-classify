@@ -137,7 +137,6 @@ const ActivityView: React.FC<ActivityViewProps> = ({
 		activityLevels.forEach((level) => {
 			categories.set(level.key, [])
 		})
-
 		repos.forEach((repo) => {
 			// 使用 pushed_at 或 updated_at，优先使用 pushed_at（代码推送时间）
 			const lastActivity = new Date(repo.pushed_at || repo.updated_at)
@@ -358,7 +357,10 @@ const ActivityView: React.FC<ActivityViewProps> = ({
 											<Row gutter={[16, 16]}>
 												{paginatedRepos.map((repo) => (
 													<Col key={repo.id} xs={24} sm={12} lg={8} xl={6}>
-														<RepoCard repo={repo} tags={[level.name]} />
+														<RepoCard
+															repo={repo}
+															tags={[level.name]}
+														/>
 													</Col>
 												))}
 											</Row>
