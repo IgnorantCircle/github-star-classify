@@ -15,6 +15,8 @@ import {
 	Badge,
 	Tooltip,
 	message,
+	ConfigProvider,
+	Pagination,
 } from 'antd'
 import {
 	DashboardOutlined,
@@ -38,7 +40,7 @@ import './App.css'
 import PopularityView from './components/PopularityView'
 import MaturityView from './components/MaturityView'
 import ActivityView from './components/ActivityView'
-
+import zhCN from 'antd/locale/zh_CN' // 引入中文语言包
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
 
@@ -158,7 +160,7 @@ function AppContent() {
 	]
 
 	const handleRefresh = async () => {
-		await fetchStarredRepos(true)
+		await fetchStarredRepos()
 	}
 
 	const handleCategoryClick = (categoryId: string) => {
@@ -204,7 +206,7 @@ function AppContent() {
 	}, [])
 
 	return (
-		<>
+		<ConfigProvider locale={zhCN}>
 			{contextHolder}
 			<Layout>
 				<Sider
@@ -456,7 +458,7 @@ function AppContent() {
 					</Content>
 				</Layout>
 			</Layout>
-		</>
+		</ConfigProvider>
 	)
 }
 

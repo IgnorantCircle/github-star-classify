@@ -81,7 +81,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 	const [messageApi, contextHolder] = message.useMessage()
 
 	// 保存基本配置
-	const handleSaveConfig = async (values: any) => {
+	const handleSaveConfig = async (values: Partial<UserConfig>) => {
 		onUpdateConfig(values)
 		messageApi.success('配置保存成功')
 		// 如果更新了GitHub Token或用户名，自动刷新数据
@@ -97,7 +97,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 	}
 
 	// 添加/编辑标签
-	const handleTagSubmit = (values: any) => {
+	const handleTagSubmit = (values: Omit<TagType, 'id'>) => {
 		if (editingTag) {
 			onUpdateTag(editingTag.id, values)
 			messageApi.success('标签更新成功')
@@ -111,7 +111,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 	}
 
 	// 添加/编辑关键词规则
-	const handleRuleSubmit = (values: any) => {
+	const handleRuleSubmit = (values: { keywords: string; tagId: string; priority: number }) => {
 		const keywords = values.keywords
 			.split(',')
 			.map((k: string) => k.trim())
@@ -190,7 +190,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 			title: '操作',
 			key: 'actions',
 			width: 120,
-			render: (_: any, record: TagType) => (
+			render: (_: unknown, record: TagType) => (
 				<Space>
 					<Button
 						size='small'
@@ -243,7 +243,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 			title: '操作',
 			key: 'actions',
 			width: 120,
-			render: (_: any, record: KeywordRule, index: number) => (
+			render: (_: unknown, record: KeywordRule, index: number) => (
 				<Space>
 					<Button
 						size='small'
@@ -368,7 +368,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 					<Table
 						dataSource={userConfig.keywordRules}
 						columns={ruleColumns}
-						rowKey={(record, index) => `rule-${index}`}
+						rowKey={(_record, index) => `rule-${index}`}
 						size='small'
 						pagination={{ pageSize: 10 }}
 					/>

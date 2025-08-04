@@ -22,7 +22,7 @@ export const useAppState = () => {
 		autoClassify: true,
 		keywordRules: [],
 	})
-	const [messageApi, contextHolder] = message.useMessage()
+	const [messageApi] = message.useMessage()
 
 	// 服务实例
 	const [githubApi] = useState(() => new GitHubApiService())
@@ -89,7 +89,7 @@ export const useAppState = () => {
 
 	// 获取starr仓库
 	const fetchStarredRepos = useCallback(
-		async (forceRefresh = false) => {
+		async () => {
 			if (!userConfig.username) {
 				messageApi.error('请先设置GitHub用户名')
 				return
@@ -133,7 +133,7 @@ export const useAppState = () => {
 				setLoading(false)
 			}
 		},
-		[userConfig, githubApi, classificationService, storageService, tags,messageApi]
+		[userConfig, githubApi, classificationService, storageService, tags, messageApi]
 	)
 
 	// 重新分类所有仓库
@@ -162,7 +162,7 @@ export const useAppState = () => {
 		userConfig.keywordRules,
 		classificationService,
 		storageService,
-    messageApi
+		messageApi
 	])
 
 	// 添加标签
@@ -180,7 +180,7 @@ export const useAppState = () => {
 			messageApi.success('标签添加成功')
 			return newTag
 		},
-		[tags, storageService,messageApi]
+		[tags, storageService, messageApi]
 	)
 
 	// 更新标签
@@ -199,7 +199,7 @@ export const useAppState = () => {
 
 			messageApi.success('标签更新成功')
 		},
-		[tags, storageService, userConfig.autoClassify, reclassifyRepos]
+		[tags, storageService, userConfig.autoClassify, reclassifyRepos, messageApi]
 	)
 
 	// 删除标签
@@ -229,6 +229,7 @@ export const useAppState = () => {
 			updateUserConfig,
 			userConfig.autoClassify,
 			reclassifyRepos,
+			messageApi,
 		]
 	)
 
@@ -255,6 +256,7 @@ export const useAppState = () => {
 			updateUserConfig,
 			userConfig.autoClassify,
 			reclassifyRepos,
+			messageApi,
 		]
 	)
 
@@ -278,6 +280,7 @@ export const useAppState = () => {
 			updateUserConfig,
 			userConfig.autoClassify,
 			reclassifyRepos,
+			messageApi,
 		]
 	)
 
@@ -299,6 +302,7 @@ export const useAppState = () => {
 			updateUserConfig,
 			userConfig.autoClassify,
 			reclassifyRepos,
+			messageApi,
 		]
 	)
 
@@ -314,7 +318,7 @@ export const useAppState = () => {
 			keywordRules: classificationService.getDefaultKeywordRules(),
 		})
 		messageApi.success('所有数据已清除')
-	}, [storageService, classificationService])
+	}, [storageService, classificationService, messageApi])
 
 	// 导出数据
 	const exportData = useCallback(() => {
@@ -336,7 +340,7 @@ export const useAppState = () => {
 			console.log('导出数据失败:', err)
 			messageApi.error('导出数据失败')
 		}
-	}, [storageService])
+	}, [storageService, messageApi])
 
 	// 导入数据
 	const importData = useCallback(
@@ -359,7 +363,7 @@ export const useAppState = () => {
 			}
 			reader.readAsText(file)
 		},
-		[storageService]
+		[storageService, messageApi]
 	)
 
 	return {
