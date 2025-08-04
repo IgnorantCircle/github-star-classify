@@ -16,7 +16,6 @@ import {
 	Tooltip,
 	message,
 	ConfigProvider,
-	Pagination,
 } from 'antd'
 import {
 	DashboardOutlined,
@@ -68,7 +67,7 @@ function AppContent() {
 		exportData,
 		importData,
 		storageService,
-	} = useAppState()
+	} = useAppState(messageApi)
 
 	const [collapsed, setCollapsed] = useState(false)
 	const storageUsage = storageService.getStorageUsage()
@@ -208,7 +207,7 @@ function AppContent() {
 	return (
 		<ConfigProvider locale={zhCN}>
 			{contextHolder}
-			<Layout>
+				<Layout>
 				<Sider
 					collapsible
 					collapsed={collapsed}

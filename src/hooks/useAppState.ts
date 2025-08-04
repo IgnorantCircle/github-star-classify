@@ -9,9 +9,9 @@ import type {
 import GitHubApiService from '../services/githubApi'
 import ClassificationService from '../services/classify'
 import StorageService from '../services/storage'
-import { message } from 'antd'
+import type { MessageInstance } from 'antd/es/message/interface'
 
-export const useAppState = () => {
+export const useAppState = (messageApi: MessageInstance) => {
 	const [repos, setRepos] = useState<GitHubRepo[]>([])
 	const [categories, setCategories] = useState<Category[]>([])
 	const [tags, setTags] = useState<Tag[]>([])
@@ -22,7 +22,6 @@ export const useAppState = () => {
 		autoClassify: true,
 		keywordRules: [],
 	})
-	const [messageApi] = message.useMessage()
 
 	// 服务实例
 	const [githubApi] = useState(() => new GitHubApiService())
@@ -124,6 +123,7 @@ export const useAppState = () => {
 					storageService.saveCategories(newCategories)
 				}
 
+			
 				messageApi.success(`成功获取 ${starredRepos.length} 个starred仓库`)
 			} catch (err: any) {
 				const errorMessage = err.message || '获取仓库失败'
