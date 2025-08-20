@@ -18,7 +18,7 @@ export const useAppState = (messageApi: MessageInstance) => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [userConfig, setUserConfig] = useState<UserConfig>({
-		username: '',
+		username: 'IgnorantCircle',
 		autoClassify: true,
 		keywordRules: [],
 	})
@@ -34,6 +34,9 @@ export const useAppState = (messageApi: MessageInstance) => {
 			try {
 				// 加载用户配置
 				const config = storageService.getUserConfig()
+				if(config.username==="IgnorantCircle"){
+					messageApi.warning('请前往设置中输入你自己的GitHub用户名')
+				}
 				setUserConfig(config)
 
 				// 更新GitHub API token
@@ -69,7 +72,20 @@ export const useAppState = (messageApi: MessageInstance) => {
 		}
 
 		initializeApp()
-	}, [githubApi, classificationService, storageService])
+	}, [githubApi, classificationService, storageService, messageApi])
+
+	// 监听repos和tags变化，确保分类数据同步
+	useEffect(() => {
+		if (repos.length > 0 && userConfig.autoClassify) {
+			const newCategories = classificationService.createCategories(
+				repos,
+				tags,
+				userConfig.keywordRules
+			)
+			setCategories(newCategories)
+			storageService.saveCategories(newCategories)
+		}
+	}, [repos, tags, userConfig.keywordRules, userConfig.autoClassify, classificationService, storageService])
 
 	// 更新用户配置
 	const updateUserConfig = useCallback(
@@ -98,10 +114,9 @@ export const useAppState = (messageApi: MessageInstance) => {
 			setError(null)
 
 			try {
-				// 检查用户名是否有效
 				const isValidUser = await githubApi.validateUser(userConfig.username)
 				if (!isValidUser) {
-					throw new Error('GitHub用户名不存在')
+					throw new Error('GitHub用户名不存在或已经被限流，请设置token')
 				}
 
 				// 获取所有starred仓库
@@ -112,21 +127,12 @@ export const useAppState = (messageApi: MessageInstance) => {
 				setRepos(starredRepos)
 				storageService.saveRepos(starredRepos)
 
-				// 自动分类
-				if (userConfig.autoClassify) {
-					const newCategories = classificationService.createCategories(
-						starredRepos,
-						tags,
-						userConfig.keywordRules
-					)
-					setCategories(newCategories)
-					storageService.saveCategories(newCategories)
-				}
+				// 分类逻辑由useEffect自动处理
 
 			
 				messageApi.success(`成功获取 ${starredRepos.length} 个starred仓库`)
-			} catch (err: any) {
-				const errorMessage = err.message || '获取仓库失败'
+			} catch (err: unknown) {
+				const errorMessage = err instanceof Error ? err.message : '获取仓库失败'
 				setError(errorMessage)
 				messageApi.error(errorMessage)
 			} finally {
@@ -192,14 +198,11 @@ export const useAppState = (messageApi: MessageInstance) => {
 			setTags(updatedTags)
 			storageService.saveTags(updatedTags)
 
-			// 如果自动分类开启，重新分类
-			if (userConfig.autoClassify) {
-				reclassifyRepos()
-			}
+			// 分类同步由useEffect自动处理
 
 			messageApi.success('标签更新成功')
 		},
-		[tags, storageService, userConfig.autoClassify, reclassifyRepos, messageApi]
+		[tags, storageService, messageApi]
 	)
 
 	// 删除标签
@@ -215,10 +218,7 @@ export const useAppState = (messageApi: MessageInstance) => {
 			)
 			updateUserConfig({ keywordRules: updatedRules })
 
-			// 重新分类
-			if (userConfig.autoClassify) {
-				reclassifyRepos()
-			}
+			// 分类同步由useEffect自动处理
 
 			messageApi.success('标签删除成功')
 		},
@@ -227,8 +227,6 @@ export const useAppState = (messageApi: MessageInstance) => {
 			storageService,
 			userConfig.keywordRules,
 			updateUserConfig,
-			userConfig.autoClassify,
-			reclassifyRepos,
 			messageApi,
 		]
 	)
@@ -244,18 +242,13 @@ export const useAppState = (messageApi: MessageInstance) => {
 			const updatedRules = [...userConfig.keywordRules, newRule]
 			updateUserConfig({ keywordRules: updatedRules })
 
-			// 如果自动分类开启，重新分类
-			if (userConfig.autoClassify) {
-				reclassifyRepos()
-			}
+			// 分类同步由useEffect自动处理
 
 			messageApi.success('关键词规则添加成功')
 		},
 		[
 			userConfig.keywordRules,
 			updateUserConfig,
-			userConfig.autoClassify,
-			reclassifyRepos,
 			messageApi,
 		]
 	)
@@ -268,18 +261,13 @@ export const useAppState = (messageApi: MessageInstance) => {
 			)
 			updateUserConfig({ keywordRules: updatedRules })
 
-			// 如果自动分类开启，重新分类
-			if (userConfig.autoClassify) {
-				reclassifyRepos()
-			}
+			// 分类同步由useEffect自动处理
 
 			messageApi.success('关键词规则更新成功')
 		},
 		[
 			userConfig.keywordRules,
 			updateUserConfig,
-			userConfig.autoClassify,
-			reclassifyRepos,
 			messageApi,
 		]
 	)
@@ -290,18 +278,13 @@ export const useAppState = (messageApi: MessageInstance) => {
 			const updatedRules = userConfig.keywordRules.filter((_, i) => i !== index)
 			updateUserConfig({ keywordRules: updatedRules })
 
-			// 如果自动分类开启，重新分类
-			if (userConfig.autoClassify) {
-				reclassifyRepos()
-			}
+			// 分类同步由useEffect自动处理
 
 			messageApi.success('关键词规则删除成功')
 		},
 		[
 			userConfig.keywordRules,
 			updateUserConfig,
-			userConfig.autoClassify,
-			reclassifyRepos,
 			messageApi,
 		]
 	)

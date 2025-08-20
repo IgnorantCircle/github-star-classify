@@ -201,13 +201,15 @@ function AppContent() {
 		const config = storageService.getUserConfig()
 		if (!config.username) {
 			messageApi.warning('请前往设置中输入GitHub用户名')
+		} else {
+			handleRefresh()
 		}
 	}, [])
 
 	return (
 		<ConfigProvider locale={zhCN}>
 			{contextHolder}
-				<Layout>
+			<Layout>
 				<Sider
 					collapsible
 					collapsed={collapsed}
@@ -340,7 +342,7 @@ function AppContent() {
 							<Tooltip title='项目信息'>
 								<Button
 									icon={<InfoCircleOutlined />}
-									href='https://github.com'
+									href='https://github.com/IgnorantCircle/github-star-classify'
 									target='_blank'
 								/>
 							</Tooltip>
@@ -462,8 +464,13 @@ function AppContent() {
 }
 
 function App() {
+	// 获取部署的子路径前缀
+	const basename = import.meta.env.PROD
+		? import.meta.env.PUBLIC_URL || '/project/github-star-classify/'
+		: '/'
+
 	return (
-		<Router>
+		<Router basename={basename}>
 			<AppContent />
 		</Router>
 	)
