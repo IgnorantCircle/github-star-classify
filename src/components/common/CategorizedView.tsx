@@ -128,7 +128,6 @@ const CategorizedView: React.FC<CategorizedViewProps> = ({
 				<Card
 					style={{
 						marginBottom: 16,
-						height: '62vh',
 						overflowY: 'auto',
 						overflowX: 'clip',
 						border: 'none',

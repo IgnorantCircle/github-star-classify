@@ -215,7 +215,7 @@ function AppContent() {
 					collapsed={collapsed}
 					onCollapse={setCollapsed}
 					theme='light'
-					width={250}
+					width={210}
 					style={{
 						overflow: 'auto',
 						height: '100vh',

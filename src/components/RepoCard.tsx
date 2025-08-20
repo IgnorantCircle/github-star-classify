@@ -80,7 +80,7 @@ const RepoCard: React.FC<RepoCardProps> = ({
 			className='repo-card'
 			style={{
 				marginBottom: 16,
-				height: 280,
+				maxHeight: 300,
 				display: 'flex',
 				flexDirection: 'column',
 			}}>
